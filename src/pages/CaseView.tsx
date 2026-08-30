@@ -190,7 +190,7 @@ export function CaseView() {
     }
   };
 
-  const handleSummarize = async () => {
+  const handleResolveYes = async () => {
     if (!caseDoc || !user || !id || caseDoc.messages.length === 0) return;
     setSummarizing(true);
     
@@ -204,26 +204,30 @@ export function CaseView() {
       const data = await res.json();
       if (data.error) throw new Error(data.error);
 
+      // Force resolution success and add 'resolved' to whatever tags were returned
+      const newTags = Array.from(new Set([...(data.tags || []), "resolved"]));
+
       const sumPayload: any = {
         summary: data.summary,
-        tags: data.tags,
+        tags: newTags,
         severity: data.severity,
-        resolutionSuccess: data.resolutionSuccess,
+        resolutionSuccess: true,
         updatedAt: serverTimestamp(),
       };
+      
       const cleanSumPayload = Object.fromEntries(Object.entries(sumPayload).filter(([_, v]) => v !== undefined));
       await updateDoc(doc(db, "users", user.uid, "cases", id), cleanSumPayload);
 
       setCaseDoc(prev => prev ? { 
         ...prev, 
         summary: data.summary, 
-        tags: data.tags, 
+        tags: newTags, 
         severity: data.severity, 
-        resolutionSuccess: data.resolutionSuccess 
+        resolutionSuccess: true 
       } : null);
 
     } catch (err) {
-      console.error("Summarize error:", err);
+      console.error("Resolve error:", err);
     } finally {
       setSummarizing(false);
       // Scroll to the top to show the new summary
@@ -232,8 +236,6 @@ export function CaseView() {
       }, 100);
     }
   };
-
-
 
   const handleSaveTitle = async () => {
     setIsEditingTitle(false);
@@ -244,19 +246,6 @@ export function CaseView() {
       });
       setCaseDoc(prev => prev ? { ...prev, title: editTitleStr.trim() } : null);
     }
-  };
-
-  const handleResolveYes = async () => {
-    if (!caseDoc || !user || !id) return;
-    const newTags = Array.from(new Set([...(caseDoc.tags || []), "resolved"]));
-    
-    await updateDoc(doc(db, "users", user.uid, "cases", id), {
-      resolutionSuccess: true,
-      tags: newTags,
-      updatedAt: serverTimestamp(),
-    });
-
-    setCaseDoc(prev => prev ? { ...prev, resolutionSuccess: true, tags: newTags } : null);
   };
 
   const handleReopenIncident = async () => {
@@ -332,16 +321,6 @@ export function CaseView() {
             <Server className="w-3 h-3" />
             GENERATE RUNBOOK
           </button>
-          <button 
-            onClick={handleSummarize}
-            disabled={isArchived || summarizing || loading || caseDoc.messages.length === 0 || caseDoc.resolutionSuccess}
-            className="flex items-center gap-2 px-4 py-2 text-[10px] font-mono uppercase tracking-widest bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600 text-zinc-700 dark:text-zinc-300 transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
-          >
-            {summarizing ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
-            ANALYZE
-          </button>
-
-
         </div>
       </header>
 

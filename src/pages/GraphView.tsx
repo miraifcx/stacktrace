@@ -121,13 +121,9 @@ export function GraphView() {
         const tags1 = getMeaningfulTags(c1.tags);
         const tags2 = getMeaningfulTags(c2.tags);
         
-        if (tags1.length > 0 && tags2.length > 0) {
-          const primary1 = tags1[0];
-          const primary2 = tags2[0];
-          
-          if (primary1 === primary2) {
-            links.push({ source: c1.id, target: c2.id, shared: [primary1] });
-          }
+        const sharedTags = tags1.filter(t => tags2.includes(t));
+        if (sharedTags.length > 0) {
+          links.push({ source: c1.id, target: c2.id, shared: sharedTags });
         }
       }
     }
