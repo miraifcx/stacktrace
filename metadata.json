@@ -1,0 +1,8 @@
+{
+  "name": "StackTrace",
+  "description": "An authenticated dashboard for sysadmins to diagnose incidents using Gemini, featuring case history, tagging, export, and graph analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
