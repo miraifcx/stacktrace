@@ -1,6 +1,6 @@
-# StackTrace - Continuous Intelligence Diagnostics
+# StackTrace
 
-StackTrace is a specialized incident response and diagnostic logging platform powered by Gemini AI. It is designed to act as a Tier-2/Tier-3 AI-assisted SRE system that tracks, summarizes, and classifies system outages and infrastructure events.
+A specialized incident response and diagnostic logging platform powered by Gemini. It is designed to act as a Tier-2/Tier-3 AI-assisted SRE system that tracks, summarizes, and classifies system outages and infrastructure events.
 
 This application is built as a full-stack Express + Vite + React (TypeScript) architecture, utilizing Firebase Authentication, Cloud Firestore for persistence, and the Gemini API for LLM-powered diagnostics.
 
